@@ -1,0 +1,11 @@
+.DS_Store
+node_modules/
+.vercel
+.env
+.env.local
+
+# Claude Code local files
+CLAUDE.md
+**/CLAUDE.md
+.claude/
+memory/
