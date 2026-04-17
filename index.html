@@ -92,26 +92,28 @@
 
         <form
           id="signup-form"
-          action="https://formspree.io/f/YOUR_FORM_ID"
-          method="POST"
-          class="flex flex-col sm:flex-row gap-3 max-w-lg mb-6"
+          class="flex flex-col sm:flex-row gap-3 max-w-lg mb-3"
+          novalidate
         >
           <input
+            id="signup-email"
             type="email"
             name="email"
             required
             placeholder="you@example.com"
-            class="flex-1 px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-green-500/50 focus:bg-white/10 transition"
+            autocomplete="email"
+            class="flex-1 px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-green-500/50 focus:bg-white/10 transition disabled:opacity-50"
           />
           <button
+            id="signup-button"
             type="submit"
-            class="px-6 py-3 rounded-lg bg-green-500 hover:bg-green-400 text-black font-semibold transition whitespace-nowrap"
+            class="px-6 py-3 rounded-lg bg-green-500 hover:bg-green-400 text-black font-semibold transition whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
           >
             Get early access
           </button>
         </form>
 
-        <p class="text-xs font-mono text-white/40 mb-16">
+        <p id="signup-status" class="text-xs font-mono text-white/40 mb-16 min-h-[1em]">
           No spam. Launch updates only.
         </p>
 
@@ -143,13 +145,66 @@
   </div>
 
   <script>
-    const form = document.getElementById('signup-form');
-    form.addEventListener('submit', async (e) => {
-      if (form.action.includes('YOUR_FORM_ID')) {
+    (() => {
+      const form = document.getElementById('signup-form');
+      const input = document.getElementById('signup-email');
+      const button = document.getElementById('signup-button');
+      const status = document.getElementById('signup-status');
+
+      const setStatus = (text, tone) => {
+        const colors = {
+          info: 'text-white/40',
+          success: 'text-green-400',
+          error: 'text-red-400',
+        };
+        status.className = `text-xs font-mono mb-16 min-h-[1em] ${colors[tone] || colors.info}`;
+        status.textContent = text;
+      };
+
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        alert('Email capture is not configured yet. Sign up at formspree.io and replace YOUR_FORM_ID in index.html.');
-      }
-    });
+        const email = input.value.trim();
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          setStatus('Please enter a valid email.', 'error');
+          return;
+        }
+
+        button.disabled = true;
+        input.disabled = true;
+        const originalLabel = button.textContent;
+        button.textContent = 'Submitting…';
+
+        try {
+          const res = await fetch('/api/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+          const data = await res.json().catch(() => ({}));
+
+          if (res.ok) {
+            form.style.display = 'none';
+            setStatus(
+              data.alreadySubscribed
+                ? "You're already on the list. We'll be in touch."
+                : "You're on the list. We'll let you know when CoinSense launches.",
+              'success'
+            );
+          } else {
+            setStatus(data.error || 'Something went wrong. Please try again.', 'error');
+            button.disabled = false;
+            input.disabled = false;
+            button.textContent = originalLabel;
+          }
+        } catch (err) {
+          setStatus('Network error. Please try again.', 'error');
+          button.disabled = false;
+          input.disabled = false;
+          button.textContent = originalLabel;
+        }
+      });
+    })();
   </script>
 
 </body>
