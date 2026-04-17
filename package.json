@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tailwindcss -i src/input.css -o style.css --minify",
-    "dev": "tailwindcss -i src/input.css -o style.css --watch"
+    "build": "tailwindcss -i src/input.css -o public/style.css --minify",
+    "dev": "tailwindcss -i src/input.css -o public/style.css --watch"
   },
   "dependencies": {
     "resend": "^6.9.4"
