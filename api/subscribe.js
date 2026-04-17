@@ -26,9 +26,6 @@ export default async function handler(req, res) {
     const { error } = await getResend().contacts.create({
       email: email.trim().toLowerCase(),
       unsubscribed: false,
-      properties: {
-        source: 'coinsense-site',
-      },
     });
 
     if (error) {
