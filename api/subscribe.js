@@ -23,9 +23,11 @@ export default async function handler(req, res) {
   }
 
   try {
+    const segmentId = process.env.RESEND_SEGMENT_ID;
     const { error } = await getResend().contacts.create({
       email: email.trim().toLowerCase(),
       unsubscribed: false,
+      ...(segmentId ? { segments: [{ id: segmentId }] } : {}),
     });
 
     if (error) {
