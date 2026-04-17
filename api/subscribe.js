@@ -17,17 +17,18 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Please enter a valid email address.' });
   }
 
-  const audienceId = process.env.RESEND_AUDIENCE_ID;
-  if (!audienceId || !process.env.RESEND_API_KEY) {
-    console.error('Missing RESEND_API_KEY or RESEND_AUDIENCE_ID');
+  if (!process.env.RESEND_API_KEY) {
+    console.error('Missing RESEND_API_KEY');
     return res.status(500).json({ error: 'Subscription is temporarily unavailable.' });
   }
 
   try {
     const { error } = await getResend().contacts.create({
       email: email.trim().toLowerCase(),
-      audienceId,
       unsubscribed: false,
+      properties: {
+        source: 'coinsense-site',
+      },
     });
 
     if (error) {
