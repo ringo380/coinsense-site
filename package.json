@@ -3,7 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "build": "tailwindcss -i src/input.css -o style.css --minify",
+    "dev": "tailwindcss -i src/input.css -o style.css --watch"
+  },
   "dependencies": {
     "resend": "^6.9.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.2",
+    "tailwindcss": "^4.2.2"
   }
 }
