@@ -79,6 +79,15 @@
           >
             Get early access
           </button>
+          <input
+            id="signup-website"
+            type="text"
+            name="website"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+            style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none"
+          />
         </form>
 
         <p id="signup-status" class="text-xs font-mono text-white/40 mb-16 min-h-[1em]">
@@ -144,10 +153,11 @@
         button.textContent = 'Submitting…';
 
         try {
+          const website = document.getElementById('signup-website').value;
           const res = await fetch('/api/subscribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
+            body: JSON.stringify({ email, website }),
           });
           const data = await res.json().catch(() => ({}));
 

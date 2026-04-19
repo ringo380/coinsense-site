@@ -11,7 +11,13 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { email } = req.body || {};
+  const { email, website } = req.body || {};
+
+  // Honeypot: real users never fill the hidden `website` field. Return success
+  // silently so the bot thinks it won.
+  if (website && String(website).trim()) {
+    return res.status(200).json({ ok: true });
+  }
 
   if (!email || typeof email !== 'string' || !EMAIL_RE.test(email.trim())) {
     return res.status(400).json({ error: 'Please enter a valid email address.' });
